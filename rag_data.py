@@ -3,7 +3,7 @@ from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
-# 1. Загрузка PDF
+# 1. Загрузка 
 loader = PyPDFLoader("data/Hameleon.pdf")
 docs = loader.load()
 print(f"Загружено страниц: {len(docs)}")
@@ -18,20 +18,20 @@ all_splits = text_splitter.split_documents(docs)
 print(f' чанков: {len(all_splits)}')
 
 # Эмбеддинг
-embeddings = HuggingFaceEmbeddings(
+passage_embeddings = HuggingFaceEmbeddings(
     model_name="deepvk/USER2-small",
     model_kwargs={'device': 'cuda'},
     encode_kwargs={
         'normalize_embeddings': True,
+        'prompt_name': 'search_document'
     }
 )
 
-# Создание векторной базы
+# Создание вб
 vector_store = Chroma(
-    embedding_function=embeddings,
+    embedding_function=passage_embeddings,
     collection_name='book',
     persist_directory='data/chroma')
 
-# 5. Сохраняем
 ids = vector_store.add_documents(all_splits)
 print(f" Документы добавлены в базу: {len(ids)}")
